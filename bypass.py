@@ -367,25 +367,34 @@ def run_bypass(base_url, path, args):
 
     # Create list of path tests
     for pattern in PATH_BYPASS_PATTERNS:
+        # Formato o padrão para exibição (trocar {0} por "path")
+        display_pattern = pattern.replace("{0}", "path")
+        
+        # Cria o caminho de teste real
         test_path = pattern.format(path)
-        bypass_tests.append(("PATH", test_path, pattern))
+        bypass_tests.append(("PATH", test_path, display_pattern))
         
         # Add uppercase version
         upper_path = path.upper()
         if upper_path != path:  # Only if there's a difference
             test_path_upper = pattern.format(upper_path)
-            bypass_tests.append(("PATH", test_path_upper, pattern + " (uppercase)"))
+            bypass_tests.append(("PATH", test_path_upper, display_pattern + " (uppercase)"))
 
     # Create list of header tests
     for header, value in HEADER_BYPASS.items():
         headers = DEFAULT_HEADERS.copy()
+        display_value = value
+        
         if "{0}" in value:
             headers[header] = value.format(path)
+            display_value = value.replace("{0}", "path")
         elif "{base_url}" in value:
             headers[header] = value.replace("{base_url}", base_url)
+            display_value = value.replace("{base_url}", "base_url")
         else:
             headers[header] = value
-        bypass_tests.append(("HEADER", path, header, headers))
+            
+        bypass_tests.append(("HEADER", path, f"{header}: {display_value}", headers))
 
     # Test HTTP methods if requested
     if args.methods:
@@ -439,8 +448,8 @@ def run_bypass(base_url, path, args):
                 
                 if status_code is not None:
                     if bypass_type == "PATH":
-                        test_path, pattern = params
-                        result = print_result(pattern, status_code, size, base_url, test_path, pattern, 
+                        test_path, display_pattern = params
+                        result = print_result(display_pattern, status_code, size, base_url, test_path, display_pattern, 
                                             use_color=not args.no_color, response_sizes=response_sizes)
                     elif bypass_type in ["HEADER", "USER_AGENT"]:
                         path, identifier = params[0], params[1]
