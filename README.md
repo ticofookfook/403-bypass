@@ -41,12 +41,15 @@ Uma ferramenta Python poderosa e versátil desenvolvida para ajudar pesquisadore
 - **Detecção Inteligente**
   - Verificação automática de status inicial
   - Filtragem inteligente de resultados 403
+  - **Detecção de falsos positivos por tamanho**
+  - **Ocultação automática de respostas repetitivas**
 - **Suporte à Wayback Machine**
   - Verificação de snapshots históricos
   - Detecção de permissões anteriores
 
 </td>
 </tr>
+</table>
 
 ## 📋 Instalação
 
@@ -268,6 +271,18 @@ Testa diferentes user agents incluindo:
 - Crawlers de mecanismos de busca (Googlebot, Bingbot)
 - Crawlers de redes sociais (Facebook)
 
+## 📊 Detecção Inteligente de Falsos Positivos
+
+A ferramenta inclui um sistema avançado para identificar e filtrar falsos positivos, tornando os resultados mais precisos:
+
+- **Ocultação de Respostas 403**: Todas as respostas 403 são completamente ocultadas para reduzir o ruído na saída
+- **Detecção de Padrões de Resposta**: A ferramenta rastreia automaticamente o tamanho das respostas de sucesso
+- **Filtragem de Falsos Positivos**: Quando várias respostas têm exatamente o mesmo tamanho, a ferramenta filtra automaticamente após as primeiras ocorrências
+- **Análise de Consistência**: Se muitas respostas têm tamanho idêntico, a ferramenta emite um alerta inteligente sugerindo falsos positivos
+- **Melhor Identificação de Bypass Reais**: Este sistema ajuda a distinguir entre redirecionamentos genéricos e verdadeiros bypasses
+
+Este recurso é particularmente útil para testar sites modernos que podem retornar uma página de erro ou login genérica com status 200 em vez de um erro 403 tradicional.
+
 ## 📊 Exemplo de Saída
 
 <p align="center">
@@ -278,11 +293,11 @@ Testa diferentes user agents incluindo:
     ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
     ┃                                                             ┃
     ┃   ██╗  ██╗ ██████╗ ██████╗     ██████╗ ██╗   ██╗██████╗    ┃
-    ┃   ██║  ██║██╔═████╗╚════██╗    ██╔══██╗╚██╗ ██╔╝██╔══██╗   ┃
-    ┃   ███████║██║██╔██║ █████╔╝    ██████╔╝ ╚████╔╝ ██████╔╝   ┃
-    ┃   ╚════██║████╔╝██║██╔═══╝     ██╔══██╗  ╚██╔╝  ██╔═══╝    ┃
-    ┃        ██║╚██████╔╝███████╗    ██████╔╝   ██║   ██║        ┃
-    ┃        ╚═╝ ╚═════╝ ╚══════╝    ╚═════╝    ╚═╝   ╚═╝        ┃
+    ┃   ██║  ██║██╔═██╗██║██╔═══██╗   ██╔══██╗╚██╗ ██╔╝██╔══██╗   ┃
+    ┃   ███████║██║██╔██║██║   ██║   ██████╔╝ ╚████╔╝ ██████╔╝   ┃
+    ┃   ╚════██║████╔╝██║██║   ██║   ██╔══██╗  ╚██╔╝  ██╔═══╝    ┃
+    ┃        ██║╚██████╔╝╚██████╔╝   ██████╔╝   ██║   ██║        ┃
+    ┃        ╚═╝ ╚═════╝  ╚═════╝    ╚═════╝    ╚═╝   ╚═╝        ┃
     ┃                                                             ┃
     ┃                  403 FORBIDDEN BYPASS TOOL                  ┃
     ┃                                                             ┃
@@ -299,17 +314,11 @@ Testa diferentes user agents incluindo:
 [*] Performing initial request to check server response...
 [*] Initial response: 403, 1528 bytes
 
-[-] http://exemplo.com/admin --> 403 FORBIDDEN, 1528 bytes
-[-] http://exemplo.com/admin/. --> 403 FORBIDDEN, 1528 bytes
-
 [+] POSSIBLE BYPASS FOUND:
     URL: http://exemplo.com//admin//
     Status: 200 OK
     Size: 8721 bytes
     Technique: //admin//
-
-[-] http://exemplo.com/./admin/./ --> 403 FORBIDDEN, 1528 bytes
-[-] http://exemplo.com/admin%20 --> 403 FORBIDDEN, 1528 bytes
 
 [+] POSSIBLE BYPASS FOUND:
     URL: http://exemplo.com/admin/.json
@@ -322,6 +331,10 @@ Testa diferentes user agents incluindo:
     Status: 200 OK
     Size: 8721 bytes
     Technique: ADMIN
+
+[!] Warning: Many responses (12) have the same size (8721 bytes).
+    This may indicate false positives due to a generic response page.
+    Consider manually verifying any bypasses with this response size.
 
 [Wayback Machine] Archive found:
 {
@@ -362,4 +375,3 @@ Contribuições, problemas e solicitações de recursos são bem-vindos! Sinta-s
 3. Faça commit de suas alterações (`git commit -m 'Adiciona um recurso incrível'`)
 4. Faça push para a branch (`git push origin recurso/recurso-incrivel`)
 5. Abra um Pull Request
-
